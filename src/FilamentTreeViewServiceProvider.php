@@ -23,10 +23,12 @@ class FilamentTreeViewServiceProvider extends PackageServiceProvider
 
     public function packageBooted(): void
     {
-        // Register assets using Filament v4 pattern
+        // Register assets...
         FilamentAsset::register([
             Css::make('filament-tree-view-styles', __DIR__.'/../resources/dist/filament-tree-view.css'),
             Js::make('filament-tree-view-scripts', __DIR__.'/../resources/dist/filament-tree-view.js'),
         ], package: 'openplain/filament-tree-view');
+
     }
+
 }

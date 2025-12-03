@@ -25,7 +25,7 @@
             ></div>
         </div>
     @else
-        <x-filament-tables::empty-state
+        <x-filament::empty-state
             :actions="$tree->getEmptyStateActions()"
             :description="$tree->getEmptyStateDescription()"
             :heading="$tree->getEmptyStateHeading()"

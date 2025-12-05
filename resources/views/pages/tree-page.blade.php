@@ -135,7 +135,7 @@
 
             <div class="filament-tree-container">
                 @foreach ($records as $record)
-                    @include('filament-tree-view::tree-node', [
+                    @include('filament-tree-view::components.tree-node', [
                         'record' => $record,
                         'depth' => 0,
                         'maxDepth' => $tree->getMaxDepth(),

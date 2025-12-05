@@ -142,7 +142,7 @@
     @if ($hasChildren && $livewire->isExpanded($record->id))
         <div class="filament-tree-children">
             @foreach ($record->children as $child)
-                @include('filament-tree-view::tree-node', [
+                @include('filament-tree-view::components.tree-node', [
                     'record' => $child,
                     'depth' => $depth + 1,
                     'maxDepth' => $maxDepth,

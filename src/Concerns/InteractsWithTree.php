@@ -280,7 +280,7 @@ trait InteractsWithTree
      * @param  array<array<string, mixed>>  $actions
      * @return array<\Filament\Actions\Action>
      */
-    protected function resolveActions(array $actions): array
+    protected function resolveActions(array $actions, bool $isMounting = true): array
     {
         $resolvedActions = [];
 

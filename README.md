@@ -39,7 +39,7 @@ This foundation gives you reliability, performance, and accessibility out of the
 
 - PHP 8.2 or higher
 - Laravel 11 or 12
-- Filament 4.0 or higher
+- Filament 4.x or 5.x
 
 ## Installation
 

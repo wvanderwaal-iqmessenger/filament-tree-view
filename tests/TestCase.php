@@ -62,6 +62,17 @@ class TestCase extends Orchestra
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
+
+        Schema::create('uuid_categories', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->uuid('parent_id')->nullable();
+            $table->foreign('parent_id')->references('id')->on('uuid_categories')->cascadeOnDelete();
+            $table->integer('order')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
     }
 }
 

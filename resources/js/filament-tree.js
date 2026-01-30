@@ -86,8 +86,8 @@ export default class FilamentTree {
      * Check if an element is a descendant of a potential ancestor
      */
     isDescendantOf(element, potentialAncestor) {
-        const elementId = parseInt(element.dataset.itemId);
-        const ancestorId = parseInt(potentialAncestor.dataset.itemId);
+        const elementId = element.dataset.itemId;
+        const ancestorId = potentialAncestor.dataset.itemId;
 
         const childrenContainer = potentialAncestor.querySelector(':scope > .filament-tree-children');
         if (!childrenContainer) return false;
@@ -132,9 +132,9 @@ export default class FilamentTree {
                 dragHandle: handle,
                 getInitialData: () => ({
                     type: 'tree-item',
-                    id: parseInt(item.dataset.itemId),
+                    id: item.dataset.itemId,
                     depth: parseInt(item.dataset.depth) || 0,
-                    parentId: parseInt(item.dataset.parentId) || -1,
+                    parentId: item.dataset.parentId || '-1',
                 }),
                 onDragStart: () => {
                     item.classList.add('filament-tree-dragging');
@@ -166,11 +166,11 @@ export default class FilamentTree {
                     const treeItem = item;
                     const data = {
                         type: 'tree-item',
-                        id: parseInt(treeItem.dataset.itemId),
+                        id: treeItem.dataset.itemId,
                     };
 
                     const targetDepth = parseInt(treeItem.dataset.depth) || 0;
-                    const targetId = parseInt(treeItem.dataset.itemId);
+                    const targetId = treeItem.dataset.itemId;
 
                     let combineBlocked = false;
                     let reorderBeforeBlocked = false;
@@ -178,7 +178,7 @@ export default class FilamentTree {
 
                     if (source?.element) {
                         const sourceElement = source.element;
-                        const sourceId = parseInt(sourceElement.dataset.itemId);
+                        const sourceId = sourceElement.dataset.itemId;
                         const droppingOnSelf = sourceId === targetId;
                         const isDescendant = this.isDescendantOf(treeItem, sourceElement);
 
@@ -252,7 +252,7 @@ export default class FilamentTree {
                         };
                     } else if (instruction.operation === 'reorder-before') {
                         const targetElement = document.querySelector(`[data-item-id="${targetId}"]`);
-                        const targetParentId = parseInt(targetElement?.dataset.parentId || '-1');
+                        const targetParentId = targetElement?.dataset.parentId || '-1';
                         moveData = {
                             nodeId: sourceId,
                             newParentId: targetParentId,
@@ -261,7 +261,7 @@ export default class FilamentTree {
                         };
                     } else if (instruction.operation === 'reorder-after') {
                         const targetElement = document.querySelector(`[data-item-id="${targetId}"]`);
-                        const targetParentId = parseInt(targetElement?.dataset.parentId || '-1');
+                        const targetParentId = targetElement?.dataset.parentId || '-1';
                         moveData = {
                             nodeId: sourceId,
                             newParentId: targetParentId,
@@ -327,7 +327,7 @@ export default class FilamentTree {
 
                 const rootItems = document.querySelectorAll('.filament-tree-container > [data-tree-item]');
                 const lastRootItem = rootItems[rootItems.length - 1];
-                const lastRootItemId = parseInt(lastRootItem?.dataset.itemId || '-1');
+                const lastRootItemId = lastRootItem?.dataset.itemId || '-1';
 
                 const moveData = {
                     nodeId: source.data.id,

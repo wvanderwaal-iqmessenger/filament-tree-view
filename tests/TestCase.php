@@ -73,6 +73,16 @@ class TestCase extends Orchestra
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
+
+        Schema::create('custom_order_categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->foreignId('parent_id')->nullable()->constrained('custom_order_categories')->cascadeOnDelete();
+            $table->integer('sort_order')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
     }
 }
 

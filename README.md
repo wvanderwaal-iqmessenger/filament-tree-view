@@ -467,6 +467,16 @@ class Category extends Model
     }
 
     /**
+     * Order column name (default: 'order')
+     * Override this for legacy databases with custom column names.
+     * Common examples: 'sort_order', 'position', 'sort', 'sequence'
+     */
+    public function getOrderKeyName(): string
+    {
+        return 'sort_order'; // Your legacy column name
+    }
+
+    /**
      * Root parent value (default: null)
      * Override this for existing databases that use -1, 0, or other values
      * to represent root nodes (nodes without a parent)
@@ -507,6 +517,34 @@ class Category extends Model
 
 No migration needed! The tree view will automatically use your custom field name for all queries and updates.
 
+#### Custom Order Field Name
+
+If your legacy database uses a different column name for the sort order (instead of `order`), override the `getOrderKeyName()` method:
+
+```php
+class Category extends Model
+{
+    use HasTreeStructure;
+
+    /**
+     * Your database uses 'sort_order' instead of 'order'
+     */
+    public function getOrderKeyName(): string
+    {
+        return 'sort_order';
+    }
+}
+```
+
+**Common legacy field names:**
+- `sort_order` - Common in legacy systems
+- `position` - Alternative naming convention
+- `sort` - Simplified field name
+- `sequence` - Alternative naming
+- `display_order` - Descriptive field name
+
+No migration needed! The tree view will automatically use your custom field name for all ordering operations.
+
 #### Custom Root Parent Value
 
 If your existing database uses `-1`, `0`, or another value to represent root nodes instead of `NULL`, override the `getParentKeyDefaultValue()` method:
@@ -526,9 +564,9 @@ class Category extends Model
 }
 ```
 
-#### Combining Both Customizations
+#### Combining Multiple Customizations
 
-You can override both methods for complete legacy database support:
+You can override multiple methods for complete legacy database support:
 
 ```php
 class Category extends Model
@@ -537,7 +575,12 @@ class Category extends Model
 
     public function getParentKeyName(): string
     {
-        return 'parent_category_id'; // Custom field name
+        return 'parent_category_id'; // Custom parent field name
+    }
+
+    public function getOrderKeyName(): string
+    {
+        return 'sort_order'; // Custom order field name
     }
 
     public function getParentKeyDefaultValue(): mixed

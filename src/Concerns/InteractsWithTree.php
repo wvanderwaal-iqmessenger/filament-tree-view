@@ -51,10 +51,12 @@ trait InteractsWithTree
     public function getTreeRecords(): array
     {
         $query = $this->getTree()->getQuery();
+        $model = $query->getModel();
+        $orderKeyName = $model->getOrderKeyName();
 
         // Get all records ordered, using the configured query
         $nodes = (clone $query)
-            ->orderBy('order')
+            ->orderBy($orderKeyName)
             ->orderBy('id')
             ->get();
 
@@ -160,6 +162,7 @@ trait InteractsWithTree
         $model = $query->getModel();
         $rootValue = $model->getParentKeyDefaultValue();
         $parentKeyName = $model->getParentKeyName();
+        $orderKeyName = $model->getOrderKeyName();
 
         // Use the configured tree query as base
         $siblings = clone $query;
@@ -175,12 +178,12 @@ trait InteractsWithTree
             $siblings = $siblings->where($parentKeyName, $parentId);
         }
 
-        $siblings = $siblings->orderBy('order')->orderBy('id')->get();
+        $siblings = $siblings->orderBy($orderKeyName)->orderBy('id')->get();
 
         $order = 1;
         foreach ($siblings as $sibling) {
-            if ($sibling->order !== $order) {
-                $sibling->order = $order;
+            if ($sibling->{$orderKeyName} !== $order) {
+                $sibling->{$orderKeyName} = $order;
                 $sibling->save();
             }
             $order++;
@@ -193,6 +196,7 @@ trait InteractsWithTree
         $model = $query->getModel();
         $rootValue = $model->getParentKeyDefaultValue();
         $parentKeyName = $model->getParentKeyName();
+        $orderKeyName = $model->getOrderKeyName();
 
         // Use the configured tree query as base
         $siblings = clone $query;
@@ -208,7 +212,7 @@ trait InteractsWithTree
             $siblings = $siblings->where($parentKeyName, $parentId);
         }
 
-        $siblings = $siblings->orderBy('order')->orderBy('id')->get();
+        $siblings = $siblings->orderBy($orderKeyName)->orderBy('id')->get();
 
         $movedNode = $siblings->firstWhere('id', $nodeId);
         $otherSiblings = $siblings->reject(fn ($item) => $item->id === $nodeId);
@@ -241,8 +245,8 @@ trait InteractsWithTree
 
         $order = 1;
         foreach ($newOrder as $item) {
-            if ($item->order !== $order) {
-                $item->order = $order;
+            if ($item->{$orderKeyName} !== $order) {
+                $item->{$orderKeyName} = $order;
                 $item->save();
             }
             $order++;

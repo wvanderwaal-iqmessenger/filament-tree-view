@@ -57,6 +57,17 @@ trait HasTreeStructure
     }
 
     /**
+     * Order column name (default: 'order')
+     *
+     * Override this for legacy databases with custom column names.
+     * Common examples: 'sort_order', 'position', 'sort', 'sequence'
+     */
+    public function getOrderKeyName(): string
+    {
+        return 'order';
+    }
+
+    /**
      * Get the value used to represent root nodes (nodes without a parent).
      *
      * By default, root nodes have parent_id = NULL.

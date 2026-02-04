@@ -105,8 +105,8 @@ class TextField extends Field
      */
     public function render(Model|array $record): string
     {
-        // Get the field value
-        $state = data_get($record, $this->name);
+        // Get the field value with translation support
+        $state = $this->getFieldState($record);
 
         // Apply custom formatting if set
         if ($this->formatStateUsing) {
@@ -199,5 +199,59 @@ class TextField extends Field
         }
 
         return e($formatted);
+    }
+
+    /**
+     * Get the field state, checking for translations if available.
+     */
+    protected function getFieldState(Model|array $record): mixed
+    {
+        // For array records, just return the data
+        if (is_array($record)) {
+            return data_get($record, $this->name);
+        }
+
+        // Check if the model has translation support
+        // Note: Can't use instanceof with traits, so check for methods instead
+        if (
+            method_exists($record, 'isTranslatableAttribute') &&
+            method_exists($record, 'getTranslation') &&
+            $record->isTranslatableAttribute($this->name)
+        ) {
+            // Get the active locale from the Livewire component (TreePage)
+            $activeLocale = $this->getActiveLocale();
+
+            if ($activeLocale) {
+                return $record->getTranslation($this->name, $activeLocale, false);
+            }
+        }
+
+        // Default behavior - just get the field value
+        return data_get($record, $this->name);
+    }
+
+    /**
+     * Get the active locale from the Livewire component.
+     */
+    protected function getActiveLocale(): ?string
+    {
+        // Try to get the active locale from the current Livewire component
+        try {
+            // Get the current Livewire component from the request lifecycle
+            if (class_exists(\Livewire\Livewire::class)) {
+                $livewire = \Livewire\Livewire::current();
+
+                if (
+                    $livewire &&
+                    method_exists($livewire, 'getActiveTreeLocale')
+                ) {
+                    return $livewire->getActiveTreeLocale();
+                }
+            }
+        } catch (\Throwable $e) {
+            // Silently fail if we can't get the Livewire instance
+        }
+
+        return null;
     }
 }

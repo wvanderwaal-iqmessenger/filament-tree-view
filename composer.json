@@ -22,6 +22,9 @@
         "filament/filament": "^4.0|^5.0",
         "staudenmeir/laravel-adjacency-list": "^1.0"
     },
+    "suggest": {
+        "spatie/laravel-translatable": "Required for translatable content support (^6.0)"
+    },
     "require-dev": {
         "laravel/pint": "^1.0",
         "pestphp/pest": "^3.0",

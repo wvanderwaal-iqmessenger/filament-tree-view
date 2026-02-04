@@ -83,6 +83,16 @@ class TestCase extends Orchestra
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
+
+        Schema::create('translatable_categories', function (Blueprint $table) {
+            $table->id();
+            $table->json('name'); // JSON field for translations
+            $table->json('description')->nullable(); // JSON field for translations
+            $table->foreignId('parent_id')->nullable()->constrained('translatable_categories')->cascadeOnDelete();
+            $table->integer('order')->default(0);
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+        });
     }
 }
 

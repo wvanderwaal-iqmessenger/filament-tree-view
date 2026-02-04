@@ -648,6 +648,127 @@ public static function tree(Tree $tree): Tree
 }
 ```
 
+### Working with Translatable Content
+
+The tree view includes built-in support for [Spatie Laravel Translatable](https://github.com/spatie/laravel-translatable), allowing you to display and manage multilingual hierarchical data.
+
+#### Setup
+
+1. **Install Spatie Translatable**:
+
+```bash
+composer require spatie/laravel-translatable
+```
+
+2. **Prepare Your Model**:
+
+```php
+use Illuminate\Database\Eloquent\Model;
+use Openplain\FilamentTreeView\Concerns\HasTreeStructure;
+use Spatie\Translatable\HasTranslations;
+
+class Category extends Model
+{
+    use HasTreeStructure;
+    use HasTranslations;
+
+    public $translatable = ['name', 'description'];
+
+    protected $fillable = ['name', 'description', 'parent_id', 'order'];
+}
+```
+
+3. **Add Translatable Trait to Resource**:
+
+```php
+use Openplain\FilamentTreeView\Resources\Concerns\Translatable;
+
+class CategoryResource extends Resource
+{
+    use Translatable;
+
+    protected static ?string $model = Category::class;
+
+    public static function getTranslatableLocales(): array
+    {
+        return ['en', 'es', 'fr']; // Configure available locales
+    }
+
+    // ... rest of your resource
+}
+```
+
+4. **Add Translatable Trait to TreePage**:
+
+```php
+use Openplain\FilamentTreeView\Resources\Pages\TreePage;
+use Openplain\FilamentTreeView\Resources\Pages\TreePage\Concerns\Translatable;
+
+class TreeCategories extends TreePage
+{
+    use Translatable;
+
+    protected static string $resource = CategoryResource::class;
+}
+```
+
+That's it! The tree will now automatically:
+- ✅ Display a locale switcher in the header
+- ✅ Show translated content for the active locale
+- ✅ Auto-detect translatable fields
+- ✅ Keep forms/modals in the admin locale (as expected)
+
+#### How It Works
+
+- **TextField automatically detects translations**: If your model uses `HasTranslations` and a field is translatable, it will automatically display the correct translation
+- **Locale switcher**: Added to header actions automatically when using the `Translatable` trait
+- **Tree display only**: Translations only affect the tree view - forms and modals stay in the admin locale
+- **No configuration needed**: TextFields detect and display translations automatically
+
+#### Customizing Locales
+
+You can customize available locales at the resource level:
+
+```php
+class CategoryResource extends Resource
+{
+    use Translatable;
+
+    public static function getTranslatableLocales(): array
+    {
+        // Use config
+        return config('app.locales');
+
+        // Or hardcode
+        return ['en', 'es', 'fr', 'de'];
+
+        // Or use a dynamic source
+        return Language::where('active', true)->pluck('code')->toArray();
+    }
+}
+```
+
+#### Example
+
+```php
+// Your translatable category model
+$category->setTranslation('name', 'en', 'Electronics');
+$category->setTranslation('name', 'es', 'Electrónica');
+$category->setTranslation('name', 'fr', 'Électronique');
+$category->save();
+
+// In the tree view:
+// - Switch to English → Shows "Electronics"
+// - Switch to Spanish → Shows "Electrónica"
+// - Switch to French → Shows "Électronique"
+```
+
+**Notes:**
+- Requires `spatie/laravel-translatable` ^6.0
+- Only tree display shows translations (forms stay in admin locale)
+- Gracefully degrades if package not installed
+- Works with all TextField configurations (colors, weights, etc.)
+
 ---
 
 ## Common Patterns

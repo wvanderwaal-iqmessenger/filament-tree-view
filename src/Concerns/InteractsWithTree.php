@@ -124,7 +124,7 @@ trait InteractsWithTree
     protected function processSingleMove(array $data): void
     {
         $nodeId = $data['nodeId'];
-        $newParentId = $data['newParentId'] ?? -1;
+        $newParentId = is_numeric($data['newParentId']) ? intval($data['newParentId']) : -1;
         $position = $data['position'] ?? 'after';
         $referenceId = $data['referenceId'] ?? null;
 

@@ -134,7 +134,7 @@ export default class FilamentTree {
                     type: 'tree-item',
                     id: item.dataset.itemId,
                     depth: parseInt(item.dataset.depth) || 0,
-                    parentId: item.dataset.parentId || '-1',
+                    parentId: item.dataset.parentId ? parseInt(item.dataset.parentId) : null,
                 }),
                 onDragStart: () => {
                     item.classList.add('filament-tree-dragging');
@@ -252,7 +252,7 @@ export default class FilamentTree {
                         };
                     } else if (instruction.operation === 'reorder-before') {
                         const targetElement = document.querySelector(`[data-item-id="${targetId}"]`);
-                        const targetParentId = targetElement?.dataset.parentId || '-1';
+                        const targetParentId = targetElement?.dataset.parentId ? parseInt(targetElement.dataset.parentId) : null;
                         moveData = {
                             nodeId: sourceId,
                             newParentId: targetParentId,
@@ -261,7 +261,7 @@ export default class FilamentTree {
                         };
                     } else if (instruction.operation === 'reorder-after') {
                         const targetElement = document.querySelector(`[data-item-id="${targetId}"]`);
-                        const targetParentId = targetElement?.dataset.parentId || '-1';
+                        const targetParentId = targetElement?.dataset.parentId ? parseInt(targetElement.dataset.parentId) : null;
                         moveData = {
                             nodeId: sourceId,
                             newParentId: targetParentId,
@@ -327,11 +327,11 @@ export default class FilamentTree {
 
                 const rootItems = document.querySelectorAll('.filament-tree-container > [data-tree-item]');
                 const lastRootItem = rootItems[rootItems.length - 1];
-                const lastRootItemId = lastRootItem?.dataset.itemId || '-1';
+                const lastRootItemId = lastRootItem?.dataset.itemId ? parseInt(lastRootItem.dataset.itemId) : null;
 
                 const moveData = {
                     nodeId: source.data.id,
-                    newParentId: -1,
+                    newParentId: null,
                     position: 'after',
                     referenceId: lastRootItemId,
                 };
@@ -481,7 +481,7 @@ export default class FilamentTree {
             // Update depth to match target's level
             const targetDepth = parseInt(targetElement.dataset.depth) || 0;
             this.updateItemDepth(sourceElement, targetDepth);
-            sourceElement.dataset.parentId = targetElement.dataset.parentId || '-1';
+            sourceElement.dataset.parentId = targetElement?.dataset.parentId ? parseInt(targetElement?.dataset.parentId) : null;
 
         } else if (operation === 'reorder-after') {
             // Insert after target element
@@ -494,7 +494,7 @@ export default class FilamentTree {
             // Update depth to match target's level
             const targetDepth = parseInt(targetElement.dataset.depth) || 0;
             this.updateItemDepth(sourceElement, targetDepth);
-            sourceElement.dataset.parentId = targetElement.dataset.parentId || '-1';
+            sourceElement.dataset.parentId = targetElement?.dataset.parentId ? parseInt(targetElement?.dataset.parentId) : null;
         }
 
         // Clean up empty containers

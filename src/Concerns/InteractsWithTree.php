@@ -80,8 +80,9 @@ trait InteractsWithTree
     protected function isRootValue(mixed $value): bool
     {
         $rootValue = $this->getRootParentValue();
-
-        return $value === $rootValue;
+        
+        // Loose comparison to handle -1 vs "-1" etc
+        return $value == $rootValue;
     }
 
     protected function buildNestedArray($nodes, $parentId = null): array

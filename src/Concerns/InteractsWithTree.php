@@ -81,8 +81,7 @@ trait InteractsWithTree
     {
         $rootValue = $this->getRootParentValue();
 
-        // Loose comparison to handle -1 vs "-1" etc
-        return $value == $rootValue;
+        return $value === $rootValue;
     }
 
     protected function buildNestedArray($nodes, $parentId = null): array
@@ -124,7 +123,7 @@ trait InteractsWithTree
     protected function processSingleMove(array $data): void
     {
         $nodeId = $data['nodeId'];
-        $newParentId = is_numeric($data['newParentId']) ? intval($data['newParentId']) : -1;
+        $newParentId = $data['newParentId'];
         $position = $data['position'] ?? 'after';
         $referenceId = $data['referenceId'] ?? null;
 
@@ -142,9 +141,9 @@ trait InteractsWithTree
         $oldParentId = $node->{$parentKeyName};
 
         // Move to new parent
-        // Frontend sends -1 for root, convert to model's root value
+        // Frontend sends null for root, convert to model's root value
         $rootValue = $this->getRootParentValue();
-        $node->{$parentKeyName} = $newParentId === -1 ? $rootValue : $newParentId;
+        $node->{$parentKeyName} = $newParentId === null ? $rootValue : $newParentId;
         $node->save();
 
         // Reorder siblings in old parent
@@ -167,7 +166,7 @@ trait InteractsWithTree
         // Use the configured tree query as base
         $siblings = clone $query;
 
-        if ($parentId === -1 || $parentId === null || $this->isRootValue($parentId)) {
+        if ($parentId === null || $this->isRootValue($parentId)) {
             // Query for root nodes
             if ($rootValue === null) {
                 $siblings = $siblings->whereNull($parentKeyName);
@@ -201,7 +200,7 @@ trait InteractsWithTree
         // Use the configured tree query as base
         $siblings = clone $query;
 
-        if ($parentId === -1 || $this->isRootValue($parentId)) {
+        if ($parentId === null || $this->isRootValue($parentId)) {
             // Query for root nodes
             if ($rootValue === null) {
                 $siblings = $siblings->whereNull($parentKeyName);

@@ -156,13 +156,14 @@ trait InteractsWithTree
         $this->reorderSiblingsWithInsert($newParentId, $nodeId, $position, $referenceId);
     }
 
-    protected function reorderSiblings(?int $parentId): void
+    protected function reorderSiblings(mixed $parentId): void
     {
         $query = $this->getTree()->getQuery();
         $model = $query->getModel();
         $rootValue = $model->getParentKeyDefaultValue();
         $parentKeyName = $model->getParentKeyName();
         $orderKeyName = $model->getOrderKeyName();
+        $primaryKey = $model->getKeyName();
 
         // Use the configured tree query as base
         $siblings = clone $query;
@@ -178,7 +179,7 @@ trait InteractsWithTree
             $siblings = $siblings->where($parentKeyName, $parentId);
         }
 
-        $siblings = $siblings->orderBy($orderKeyName)->orderBy('id')->get();
+        $siblings = $siblings->orderBy($orderKeyName)->orderBy($primaryKey)->get();
 
         $order = 1;
         foreach ($siblings as $sibling) {
@@ -190,13 +191,14 @@ trait InteractsWithTree
         }
     }
 
-    protected function reorderSiblingsWithInsert(int $parentId, int $nodeId, string $position, ?int $referenceId): void
+    protected function reorderSiblingsWithInsert(mixed $parentId, int|string $nodeId, string $position, int|string|null $referenceId): void
     {
         $query = $this->getTree()->getQuery();
         $model = $query->getModel();
         $rootValue = $model->getParentKeyDefaultValue();
         $parentKeyName = $model->getParentKeyName();
         $orderKeyName = $model->getOrderKeyName();
+        $primaryKey = $model->getKeyName();
 
         // Use the configured tree query as base
         $siblings = clone $query;
@@ -212,7 +214,7 @@ trait InteractsWithTree
             $siblings = $siblings->where($parentKeyName, $parentId);
         }
 
-        $siblings = $siblings->orderBy($orderKeyName)->orderBy('id')->get();
+        $siblings = $siblings->orderBy($orderKeyName)->orderBy($primaryKey)->get();
 
         $movedNode = $siblings->firstWhere('id', $nodeId);
         $otherSiblings = $siblings->reject(fn ($item) => $item->id === $nodeId);

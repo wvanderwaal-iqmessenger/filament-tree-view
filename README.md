@@ -234,6 +234,7 @@ The tree uses sensible defaults for most settings:
 - [Custom Fields](#custom-fields) - Display custom data in nodes
 - [Actions](#actions) - Add edit, delete, and custom actions
 - [Model Configuration](#model-configuration) - Customize column names
+- [UUID Primary Keys](#uuid-primary-keys) - Support for UUID columns
 - [Empty State](#customizing-empty-state) - Customize the "no records" view
 - [Save Behavior](#save-behavior) - Manual vs auto-save
 - [Query Customization](#query-customization) - Filter and order records
@@ -556,10 +557,13 @@ class Category extends Model
 
     /**
      * Existing database uses -1 for root nodes
+     *
+     * ⚠️ WARNING: Only use non-null values like -1 or 0 with INTEGER parent_id columns.
+     * For UUID or other string-based columns, you MUST use null for root nodes.
      */
     public function getParentKeyDefaultValue(): mixed
     {
-        return -1;
+        return -1; // Only works with integer columns
     }
 }
 ```
@@ -591,6 +595,39 @@ class Category extends Model
 ```
 
 No database migrations needed! The package handles all queries and updates automatically.
+
+### UUID Primary Keys
+
+The tree view fully supports UUID primary keys and foreign keys. No special configuration is required:
+
+```php
+Schema::create('categories', function (Blueprint $table) {
+    $table->uuid('id')->primary();
+    $table->uuid('parent_id')->nullable(); // Works automatically
+    $table->integer('order')->default(0);
+    $table->timestamps();
+});
+```
+
+**Important:** When using UUID columns for `parent_id`, root nodes must use `null` (this is the default behavior). Do **not** override `getParentKeyDefaultValue()` to return `-1` or `0` - these values are invalid for UUID columns and will cause database errors.
+
+```php
+class Category extends Model
+{
+    use HasTreeStructure;
+
+    // ✅ Correct - uses null for root nodes (default)
+    // No need to override getParentKeyDefaultValue()
+
+    // ❌ Wrong - will fail with UUID columns
+    // public function getParentKeyDefaultValue(): mixed
+    // {
+    //     return -1; // Invalid for UUID!
+    // }
+}
+```
+
+The trait automatically handles UUID columns - just ensure `parent_id` is nullable and leave the default `null` value for root nodes.
 
 ### Customizing Empty State
 

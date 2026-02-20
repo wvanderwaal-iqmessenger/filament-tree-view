@@ -130,12 +130,21 @@ export default class FilamentTree {
             const cleanup = draggable({
                 element: item,
                 dragHandle: handle,
-                getInitialData: () => ({
-                    type: 'tree-item',
-                    id: item.dataset.itemId,
-                    depth: parseInt(item.dataset.depth) || 0,
-                    parentId: item.dataset.parentId ? parseInt(item.dataset.parentId) : null,
-                }),
+                getInitialData: () => {
+                    // Parse parentId, treating -1 as null (root level)
+                    let parentId = null;
+                    if (item.dataset.parentId) {
+                        const parsed = parseInt(item.dataset.parentId);
+                        parentId = parsed === -1 ? null : parsed;
+                    }
+
+                    return {
+                        type: 'tree-item',
+                        id: item.dataset.itemId,
+                        depth: parseInt(item.dataset.depth) || 0,
+                        parentId: parentId,
+                    };
+                },
                 onDragStart: () => {
                     item.classList.add('filament-tree-dragging');
                 },
@@ -252,7 +261,12 @@ export default class FilamentTree {
                         };
                     } else if (instruction.operation === 'reorder-before') {
                         const targetElement = document.querySelector(`[data-item-id="${targetId}"]`);
-                        const targetParentId = targetElement?.dataset.parentId ? parseInt(targetElement.dataset.parentId) : null;
+                        // Parse targetParentId, treating -1 as null (root level)
+                        let targetParentId = null;
+                        if (targetElement?.dataset.parentId) {
+                            const parsed = parseInt(targetElement.dataset.parentId);
+                            targetParentId = parsed === -1 ? null : parsed;
+                        }
                         moveData = {
                             nodeId: sourceId,
                             newParentId: targetParentId,
@@ -261,7 +275,12 @@ export default class FilamentTree {
                         };
                     } else if (instruction.operation === 'reorder-after') {
                         const targetElement = document.querySelector(`[data-item-id="${targetId}"]`);
-                        const targetParentId = targetElement?.dataset.parentId ? parseInt(targetElement.dataset.parentId) : null;
+                        // Parse targetParentId, treating -1 as null (root level)
+                        let targetParentId = null;
+                        if (targetElement?.dataset.parentId) {
+                            const parsed = parseInt(targetElement.dataset.parentId);
+                            targetParentId = parsed === -1 ? null : parsed;
+                        }
                         moveData = {
                             nodeId: sourceId,
                             newParentId: targetParentId,

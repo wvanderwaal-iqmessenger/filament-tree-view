@@ -217,7 +217,7 @@ trait InteractsWithTree
         $siblings = $siblings->orderBy($orderKeyName)->orderBy($primaryKey)->get();
 
         $movedNode = $siblings->firstWhere('id', $nodeId);
-        $otherSiblings = $siblings->reject(fn ($item) => $item->id === $nodeId);
+        $otherSiblings = $siblings->reject(fn ($item) => $item->id == $nodeId);
 
         $newOrder = [];
 
@@ -232,13 +232,13 @@ trait InteractsWithTree
                 $newOrder[] = $movedNode;
             } else {
                 foreach ($otherSiblings as $sibling) {
-                    if ($position === 'before' && $sibling->id === $referenceId) {
+                    if ($position === 'before' && $sibling->id == $referenceId) {
                         $newOrder[] = $movedNode;
                     }
 
                     $newOrder[] = $sibling;
 
-                    if ($position === 'after' && $sibling->id === $referenceId) {
+                    if ($position === 'after' && $sibling->id == $referenceId) {
                         $newOrder[] = $movedNode;
                     }
                 }

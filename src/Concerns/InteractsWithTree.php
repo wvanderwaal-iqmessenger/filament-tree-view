@@ -135,6 +135,14 @@ trait InteractsWithTree
             return;
         }
 
+        // Cast IDs to the model's key type so strict === comparisons work correctly.
+        // JavaScript sends IDs as strings from dataset.itemId, but integer PKs come
+        // back from Eloquent as integers.
+        if ($node->getKeyType() === 'int') {
+            $nodeId = (int) $nodeId;
+            $referenceId = $referenceId !== null ? (int) $referenceId : null;
+        }
+
         // Get the parent key name from the model
         $parentKeyName = $node->getParentKeyName();
 
@@ -217,7 +225,7 @@ trait InteractsWithTree
         $siblings = $siblings->orderBy($orderKeyName)->orderBy($primaryKey)->get();
 
         $movedNode = $siblings->firstWhere('id', $nodeId);
-        $otherSiblings = $siblings->reject(fn ($item) => $item->id == $nodeId);
+        $otherSiblings = $siblings->reject(fn ($item) => $item->id === $nodeId);
 
         $newOrder = [];
 
@@ -232,13 +240,13 @@ trait InteractsWithTree
                 $newOrder[] = $movedNode;
             } else {
                 foreach ($otherSiblings as $sibling) {
-                    if ($position === 'before' && $sibling->id == $referenceId) {
+                    if ($position === 'before' && $sibling->id === $referenceId) {
                         $newOrder[] = $movedNode;
                     }
 
                     $newOrder[] = $sibling;
 
-                    if ($position === 'after' && $sibling->id == $referenceId) {
+                    if ($position === 'after' && $sibling->id === $referenceId) {
                         $newOrder[] = $movedNode;
                     }
                 }
